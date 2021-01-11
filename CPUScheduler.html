@@ -1,0 +1,275 @@
+
+<!-- Matthew Setaro - COM-310 - CPU Scheduler Simulation-->
+
+<!-- I tried to do both FCFS and SJF, but I could not figure out how to do SJF. 
+The code I had for SJF is commented out below. -->
+
+<!-- The program assumes any integer < 0 as its input,
+when clicing the "Random Burst Times" button, the numbers are from 1-50 
+and when you click the reset button, the entire program will reset (its not an "undo" function)-->
+
+<!DOCTYPE html>
+<html>
+    <body>
+        <style>
+            
+            body {
+                zoom: 130%;
+            }
+            h4 {
+                margin-right: 50px;
+            }
+            .buttons {
+                margin-top: 20px;
+            }
+            .header {
+                display: flex;
+                flex-direction: row;
+            }
+            .procLabel {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 14px;
+                margin-right: 10px;
+                margin-left: 15px;
+            }
+            .procName {
+                width: 20px;
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 11px;
+                margin-left: 105px;
+                
+            }
+            #content {
+                display: flex;
+                flex-direction: row;
+            }
+            #schedSel {
+                margin-top: 15px;
+            }
+            #turnaround {
+                margin-left: 155px;
+                margin-top: -20px;
+                margin-bottom: -10px;
+            }
+            #wait {
+                margin-left: 155px;
+                margin-top: -20px;
+                margin-bottom: -10px;
+            }
+        </style>
+
+        <div> <!-- select num of processes -->
+            <label for="numOfP">Number of Processes:</label>
+            <select name="numOfP" id="numOfP" onchange="showContent();">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+        <div> <!-- algorithm selector -->
+            <label for="schedSel">Scheduling Algorithm: </label>
+            <select name="schedSel" id="schedSel">
+                <option value="FCFS">First Come First Serve (FCFS)</option>
+                <!-- <option value="SJF">Shortest Job First (SJF)</option> -->
+            </select>
+        </div>
+        <div class="buttons"> <!-- buttons-->
+            <button onclick="randBurst();">Random Burst Times</button>
+            <button onclick="calculate();">Calculate</button>
+            <button onclick="reset();">Reset</button>
+        </div>
+        <div class="header"> <!-- column headers -->
+            <h4>Processes</h4>
+            <h4>Burst Time (ms)</h4>
+            <h4>Turnaround Time (ms)</h4>
+            <h4>Wait Time (ms)</h4>
+        </div>
+        <div id="content">  <!-- Where all the content will be dynamically shown -->
+            <span id="labels">
+            
+            </span>
+            <span id="text">
+            
+            </span>
+            <span id="turnaround">
+                
+            </span>
+            <span id="wait">
+
+            </span>
+        </div>
+        
+        <script>
+            //does calculations based off of inputted burst times and the selected algorithm
+            function calculate() {
+                //to reset from last run
+                document.getElementById("turnaround").innerHTML = "";
+                document.getElementById("wait").innerHTML = "";
+                let processNum = document.getElementById("numOfP").value;
+                if (document.getElementById("schedSel").value == "FCFS") { //if FCFS selected
+                    //turnaround time --  = (finishing time - arrival time)
+                    var finishingTime = 0;
+                    var turnaroundTimes = [];
+                    for (i = 0; i < processNum; i++){
+                        var finOut = document.createElement("p");
+                        finishingTime += Number(document.getElementById("p" + (i+1)).value);
+                        finOut.innerHTML = finishingTime;
+                        document.getElementById("turnaround").appendChild(finOut);
+                        //need to store these results in an array to calculate wait time?
+                        turnaroundTimes[i]=finishingTime;
+                    }
+                    //wait time -- = (turnaround time - burst time)
+                    var waitTime = 0;
+                    for (i = 0; i < processNum; i++) {
+                        var waitOut = document.createElement("p");
+                        waitTime = Number(turnaroundTimes[i] - document.getElementById("p" + (i+1)).value);
+                        waitOut.innerHTML = waitTime;
+                        document.getElementById("wait").appendChild(waitOut);
+                    }
+                }
+                else { // SJF selected
+                    //sjf Object
+                    // var sjf = {
+                    //     processID: 0,
+                    //     burstTime: 0,
+                    //     getTime: function() {
+                    //         return this.burstTime;
+                    //     },
+                    //     getID: function() {
+                    //         return this.processID;
+                    //     },
+                    //     setTime: function(num){
+                    //         this.burstTime = num;
+                    //     },
+                    //     setID: function(num){
+                    //         this.processID = num;
+                    //     }
+                    // }
+                    // function Sjf (id, time) {
+                    //     this.processID = id;
+                    //     this.burstTime = time;                 
+                    // }
+
+
+                    //create objects for how many processes
+                    //store them in an array
+                    // var sjfObjects = []
+                    // for (i = 0; i < processNum; i++){
+                    //     var id = i;
+                    //     var time = document.getElementById("p" + (i+1)).value;
+                    //     var temp = new Sjf(id, time);
+                    //     sjfObjects[i] = temp;
+                    // }
+                   
+                    // var test = [1, 5, 3, 7, 203, 6543, 234 ,34,2342,342]
+                    // sortBurst(test); 
+                    //document.write(sjfObjects[1].getTime)
+                    // sortBurst(sjfObjects)
+                    // for (i = 0; i < sjfObjects.length; i++){
+                    //     document.write(sjfObjects[i].burstTime+ "  ");
+                    // }
+                    //sjfObjects[i].processID + ", " + sjfObjects[i].burstTime + "    "
+                    // //turnaround time --  = (finishing time - arrival time)
+                    // var finishingTime = 0;
+                    // for (i = 0; i < processNum; i++){
+                    //     finishingTime += Number(sjfObjects[i].burstTime);
+                    //     sjfObjects[i].burstTime = finishingTime;
+                    // }
+                    // //need to sort by pID now
+                    // sortID(sjfObjects)
+
+                
+                    // //print
+                    // for (i = 0; i < processNum; i++){
+                    //     //create p and append
+                    //     var waitOut = document.createElement("p");
+                    //     waitOut.innerHTML = sjfObjects[i].burstTime
+                    //     document.getElementById("turnaround").appendChild(waitOut);
+                    // }
+                    //wait time -- = (turnaround time - burst time)
+
+                }
+            }
+
+            //generates random numbers 1-50, sets the value to the text box
+            function randBurst() {
+                let processNum = document.getElementById("numOfP").value;
+                for (i = 0; i < processNum; i++){
+                    document.getElementById("p" + (i+1)).value = "";
+                    var time = Math.floor((Math.random() * 50) +1)
+                    document.getElementById("p" + (i+1)).value = time;
+                }
+                
+            }
+
+            //reload the page to "reset" it
+            function reset() {
+                location.reload();
+            }
+            
+            //dynamically display info on the page according to how many processes selected
+            function showContent() {
+                let processNum = document.getElementById("numOfP").value;
+                //reset the view for all elements
+                document.getElementById("text").innerHTML = "";
+                document.getElementById("labels").innerHTML = "";
+                document.getElementById("turnaround").innerHTML = "";
+                document.getElementById("wait").innerHTML = "";
+                for (i = 0; i < processNum; i++) {
+                    //create text boxes
+                    var textEntries = document.createElement("input");
+                    textEntries.type = "text";
+                    textEntries.id = "p" + (i+1);
+                    textEntries.className = "procName";
+                    document.getElementById("text").appendChild(textEntries);
+
+                    //create labels
+                    var labels = document.createElement("label")
+                    labels.id = "L" + (i+1);
+                    labels.htmlFor = "p" + (i+1);
+                    labels.innerHTML = "P" + (i+1);
+                    labels.className = "procLabel";
+                    document.getElementById("labels").appendChild(labels);
+                }  
+            }
+            
+
+            //not used -- for SJF
+            function sortID( arr ){
+                for (j = arr.length - 1; j >= 0; j--){
+                    for (i = 0; i < arr.length; i++){
+                        if ( arr[i].processID > arr[i+1].processID ){ 
+                            var temp = arr[i];
+                            arr[i] = arr[i+1];
+                            arr[i+1] = temp;
+                        }
+                    }
+                }
+            } 
+            
+            //sort (bubble) method for the SJF calculation -- not used
+            function sortBurst( arr ){
+                for (j = arr.length - 1; j >= 0; j--){
+                    for (i = 0; i < arr.length; i++){
+                        if ( Object.values(arr[i]).burstTime > Object.values(arr[i+1] ).burstTime){ 
+                            var temp = arr[i];
+                            arr[i] = arr[i+1];
+                            arr[i+1] = temp;
+                        }
+                    }
+                }
+            }
+        </script>
+        
+    </body>
+</html>
